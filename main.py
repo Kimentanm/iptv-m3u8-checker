@@ -10,6 +10,7 @@ import utils.tools
 import time
 import os
 import threading
+from urllib import request
 
 class Iptv(object):
     playlist_file = 'playlists/'
@@ -21,6 +22,38 @@ class Iptv(object):
     def __init__(self):
         self.T = utils.tools.Tools()
         self.now = int(time.time() * 1000)
+
+    def getPlaylistFromNetwork(self, url):
+        playList = []
+        if url[-4:] == '.txt':
+            response = request.urlopen(url)
+            txt = response.read().decode('utf-8')
+            lines = txt.split('\r\n')
+            total = len(lines)
+            for i in range(0, total):
+                line = lines[i].strip('\n')
+                item = line.split(',', 1)
+                if len(item) == 2:
+                    data = {
+                        'title': item[0],
+                        'url': item[1],
+                    }
+                    playList.append(data)
+        elif url[-4:] == '.m3u':
+            try:
+                m3u8_obj = m3u8.load(url)
+                total = len(m3u8_obj.segments)
+                for i in range(0, total):
+                    tmp_title = m3u8_obj.segments[i].title
+                    tmp_url = m3u8_obj.segments[i].uri
+                    data = {
+                        'title': tmp_title,
+                        'url': tmp_url,
+                    }
+                    playList.append(data)
+            except Exception as e:
+                print(e)
+        return playList
 
     def getPlaylist(self):
 
@@ -122,6 +155,9 @@ class Iptv(object):
                 os.makedirs(self.m3u8_file_path)
 
             result = self.resultData.values()
+            # 排序
+            sorted(result, key=lambda value: value['title'])
+
             if len(result)>0 :
                 output_file=self.m3u8_file_path+ str(time.time()*1000) +'.m3u'
                 with open (output_file,'w') as f:
@@ -139,6 +175,8 @@ class Iptv(object):
 if __name__ == '__main__':
     iptv=Iptv()
     print('开始......')
-    iptv.checkPlayList(iptv.getPlaylist())
+    playlist = iptv.getPlaylistFromNetwork('https://gitee.com/happiness-2022/mytv/raw/master/mytv2.txt')
+    # playlist = iptv.getPlaylist()
+    iptv.checkPlayList(playlist)
     iptv.writeM3U8File()
     print('结束.....')

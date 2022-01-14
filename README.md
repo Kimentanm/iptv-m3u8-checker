@@ -6,6 +6,7 @@ Fork From [AlexKwan1981/iptv-m3u8-checker](https://github.com/AlexKwan1981/iptv-
 ### 新增内容
 - 去除sqlite数据库改用内存临时存储
 - 增加多线程，速度比原先快了大概95%
+- 新增从网络URL中获取直播源源文件（使用getPlaylistFromNetwork方法）
 
 ## 简介
 
