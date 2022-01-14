@@ -1,5 +1,12 @@
 # IPTV 直播源批量检测程序
 
+## Fork
+Fork From [AlexKwan1981/iptv-m3u8-checker](https://github.com/AlexKwan1981/iptv-m3u8-checker)
+
+### 新增内容
+- 去除sqlite数据库改用内存临时存储
+- 增加多线程，速度比原先快了大概95%
+
 ## 简介
 
 ### 主要功能
